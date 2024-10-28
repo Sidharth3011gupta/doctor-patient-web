@@ -1,19 +1,34 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const validatePassword =require("../utils/validatePassword")
 
 exports.signup = async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, gender,dob,mobile_number, email, password, role } = req.body;
   try {
     const userExists = await User.findOne({ email });
-    if (userExists)
+    if (userExists){
       return res.status(400).json({ message: "User already exists" });
+     }
+      const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      let errorMessage = 'Password must meet the following criteria:';
+      if (!passwordValidation.errors.hasUpperCase) errorMessage += ' At least one uppercase letter.';
+      if (!passwordValidation.errors.hasLowerCase) errorMessage += ' At least one lowercase letter.';
+      if (!passwordValidation.errors.hasDigit) errorMessage += ' At least one number.';
+      if (!passwordValidation.errors.hasSpecialChar) errorMessage += ' At least one special character.';
+      if (!passwordValidation.errors.isValidLength) errorMessage += ' Minimum length of 8 characters.';
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+      return res.status(400).json({ message: errorMessage });
+    }
+    const hashedPassword = await bcrypt.hash(password, 8);
     const isDoctor = role === "doctor";
 
     const user = new User({
       name,
+      gender,
+      dob,
+      mobile_number, 
       email,
       password: hashedPassword,
       role,
