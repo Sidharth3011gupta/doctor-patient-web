@@ -27,13 +27,15 @@ const userSchema = new mongoose.Schema({
      },
   role: {
     type: String,
-    enum: ["doctor", "patient"],
-    required: true,
+    enum: ["doctor", "patient"]
   },
   isDoctor: { 
     type: Boolean,
      default: false 
     },
+    specialization: { type: String }, 
+   experience: { type: Number }, 
+  clinicAddress: { type: String }
 });
 
 module.exports = mongoose.model("User", userSchema);
