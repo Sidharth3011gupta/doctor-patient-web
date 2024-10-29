@@ -31,7 +31,7 @@ exports.getDashboard = async (req, res) => {
     const pendingAppointments = appointments.filter(app => app.status === 'pending').length;
 
     res.json({
-      message: `Welcome, Dr. ${doctor.name}`,
+      message: `Welcome, ${doctor.name}`,
       summary: {
         totalAppointments: appointments.length,
         pendingAppointments,
