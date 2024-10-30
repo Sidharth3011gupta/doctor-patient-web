@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const validatePassword =require("../utils/validatePassword")
-
+const validateMobilenumber=require('../utils/validateMobile_number')
 exports.signup = async (req, res) => {
   const { name, gender,dob,mobile_number, email, password, role } = req.body;
   try {
@@ -18,6 +18,17 @@ exports.signup = async (req, res) => {
       if (!passwordValidation.errors.hasDigit) errorMessage += ' At least one number.';
       if (!passwordValidation.errors.hasSpecialChar) errorMessage += ' At least one special character.';
       if (!passwordValidation.errors.isValidLength) errorMessage += ' Minimum length of 8 characters.';
+
+      return res.status(400).json({ message: errorMessage });
+    }
+    const mobileValidation = validateMobilenumber(mobile_number);
+    if (!mobileValidation.isValid) {
+      let errorMessage = 'Password must meet the following criteria:';
+     
+      
+      if (!mobileValidation.errors.type) errorMessage += ' Must  be number.';
+          
+      if (!mobileValidation.errors.isvalidlength) errorMessage += ' Minimum length of 10 numbers.';
 
       return res.status(400).json({ message: errorMessage });
     }
