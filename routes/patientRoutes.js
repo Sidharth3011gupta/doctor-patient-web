@@ -20,5 +20,5 @@ router.get(
 );
 
 router.get("/profile", authenticate, isPatient, patientController.getProfile);
-
+router.put('/patient/profile', authenticate, isPatient, patientController.updatedPatientProfile);
 module.exports = router;

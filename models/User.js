@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema({
   mobile_number:{
     type:Number,
     required:true
+    ,unique:true
   },
   email: { 
     type: String,
@@ -33,9 +34,56 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
      default: false 
     },
-    specialization: { type: String }, 
-   experience: { type: Number }, 
-  clinicAddress: { type: String }
-});
+    specialization: {
+       type: String
+       }, 
+   experience: { 
+    type: Number 
+  }, 
+  clinicAddress: { 
+    type: String 
+  },
+  HouseNumber:{
+    type:String
+  },
+  Colony:{
+    type:String
+  },
+  Street:{
+    type:String 
+  },
+  Area:{
+    type:String
+  },
+  Locality:{
+    type:String
+  },
+  City:{
+    type:String
+  },
+  State:{
+    type:String
+  },
+  Country:{
+    type:String
+  },
+  Pincode:{
+    type:Number
+  },
+  BloodGroup:{
+    type:String
+  },
+ConsultationFee:{
+  type:Number
+},
+Languages:{
+  type:String
+},
+Bio:{
+  type:String
+}
+
+  }
+);
 
 module.exports = mongoose.model("User", userSchema);

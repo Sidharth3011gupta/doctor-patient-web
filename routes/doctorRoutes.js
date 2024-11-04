@@ -17,6 +17,6 @@ router.get(
   doctorController.getAppointments
 );
 
-module.exports = router;
-
+router.put('/doctors/profile', authenticate, isDoctor, doctorController.updateDoctorProfile);
 router.get("/doctors", doctorController.getDoctors);
+module.exports = router;
