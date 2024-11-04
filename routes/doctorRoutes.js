@@ -13,3 +13,5 @@ router.get('/profile', authenticate, isDoctor, doctorController.getProfile);
 router.get('/appointments', authenticate, isDoctor, doctorController.getAppointments);
 
 module.exports = router;
+
+router.get('/doctors', doctorController.getDoctors);

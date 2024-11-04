@@ -1,10 +1,10 @@
 function validateMobilenumber(mobile_number){
-    const isvalidlength =mobile_number.length===10;
-    const type= typeof mobile_number === 'number';
+    const isvalidlength =mobile_number.toString().length===10;
+    const mobiletype= typeof mobile_number === 'number';
     return {
-        isValid: type &&  isvalidlength,
+        isValid: mobiletype &&  isvalidlength,
         errors: {
-          type,
+          mobiletype,
           isvalidlength
         }
       };

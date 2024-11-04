@@ -1,8 +1,8 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const validatePassword =require("../utils/validatePassword")
-const validateMobilenumber=require('../utils/validateMobile_number')
+const validatePassword =require("../utils/validatePassword");
+const validateMobilenumber=require('../utils/validateMobile_number');
 exports.signup = async (req, res) => {
   const { name, gender,dob,mobile_number, email, password, role } = req.body;
   try {
@@ -23,10 +23,8 @@ exports.signup = async (req, res) => {
     }
     const mobileValidation = validateMobilenumber(mobile_number);
     if (!mobileValidation.isValid) {
-      let errorMessage = 'Password must meet the following criteria:';
-     
-      
-      if (!mobileValidation.errors.type) errorMessage += ' Must  be number.';
+      let errorMessage = 'Mobile Number must meet the following criteria:';
+      if (!mobileValidation.errors.mobiletype) errorMessage += ' Must be number.';
           
       if (!mobileValidation.errors.isvalidlength) errorMessage += ' Minimum length of 10 numbers.';
 
@@ -48,27 +46,35 @@ exports.signup = async (req, res) => {
     await user.save();
 
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      { id: user._id,
+         role: user.role },
       process.env.JWT_SECRET,
-      // { expiresIn: "1h" }
+      { expiresIn: "1h" }
     );
     res
       .status(201)
       .json({
         message: "User registered successfully",
         token,
-        user: { id: user._id, name: user.name, role: user.role },
+        user: { id: user._id,
+           name: user.name, 
+           role: user.role },
       });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
+    console.log(error)
   }
 };
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email , mobile_number, password } = req.body;
+  console.log(typeof mobile_number)
+  const loginId = email || mobile_number
   try {
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const user = await User.findOne({ loginId });
+    if (!user) return res.status(404).json(
+      { message: "User not found" }
+    );
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)

@@ -42,3 +42,13 @@ exports.getDashboard = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
+exports.getDoctors = async (req, res) => {
+  try {
+    const doctors = await User.find({ role: 'doctor' }, 'name specialization experience clinicAddress phone');
+    res.status(200).json({ doctors });
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving doctors', error: error.message });
+  }
+};
