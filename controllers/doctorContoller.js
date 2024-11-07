@@ -80,6 +80,9 @@ exports.updateDoctorProfile = async (req, res) => {
       updatedData.mobile_number = req.body.mobile_number;
     if (req.body.gender) updatedData.gender = req.body.gender;
     if (req.body.Bio) updatedData.Bio = req.body.Bio;
+    if (req.body.CompletedIn) updatedData.CompletedIn = req.body.CompletedIn;
+    if (req.body.Degree) updatedData.Degree = req.body.Degree;
+    if (req.body.Institute) updatedData.Institute = req.body.Institute;
     if (req.body.Languages) updatedData.Languages = req.body.Languages;
     const updatedDoctor = await User.findByIdAndUpdate(doctorId, updatedData, {
       new: true,

@@ -54,8 +54,7 @@ exports.signup = async (req, res) => {
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      process.env.JWT_SECRET
     );
     res.status(201).json({
       message: "User registered successfully",
@@ -70,7 +69,6 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
   const { email, mobile_number, password } = req.body;
-  // console.log(typeof mobile_number);
   const loginId = email ?? mobile_number;
 
   try {
@@ -86,8 +84,7 @@ exports.login = async (req, res) => {
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      process.env.JWT_SECRET
     );
     res.json({
       message: "Logged in successfully",

@@ -81,6 +81,15 @@ Languages:{
 },
 Bio:{
   type:String
+},
+Degree:{
+  type:String
+},
+Institute:{
+  type:String
+},
+CompletedIn:{
+  type:Number
 }
 
   }
