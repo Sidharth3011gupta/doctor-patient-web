@@ -5,6 +5,7 @@ const authRoutes = require("./routes/authRoutes");
 const cors=require("cors");
 const doctorRoutes=require("./routes/doctorRoutes");
 const patientRoutes = require('./routes/patientRoutes');
+const specialityRoutes= require('./routes/specialityRoutes');
 
 dotenv.config();
 
@@ -21,5 +22,6 @@ app.use("/auth", authRoutes);
 app.use('/doctor', doctorRoutes);
 app.use('/patient', patientRoutes);
 app.use('/api', doctorRoutes);
+app.use('/api2',specialityRoutes)
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
