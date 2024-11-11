@@ -19,4 +19,5 @@ router.get(
 
 router.put('/doctors/profile', authenticate, isDoctor, doctorController.updateDoctorProfile);
 router.get("/doctors", doctorController.getDoctors);
+router.get('/doctors/search',doctorController.getDoctorsBySpeciality);
 module.exports = router;

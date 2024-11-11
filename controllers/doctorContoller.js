@@ -51,7 +51,7 @@ exports.getDoctors = async (req, res) => {
   try {
     const doctors = await User.find(
       { role: "doctor" },
-      "name specialization experience clinicAddress phone"
+      "name specialization experience clinicAddress mobile_number Languages Degree"
     );
     res.status(200).json({ doctors });
   } catch (error) {
@@ -60,7 +60,22 @@ exports.getDoctors = async (req, res) => {
       .json({ message: "Error retrieving doctors", error: error.message });
   }
 };
-// Update doctor profile
+exports.getDoctorsBySpeciality=async(req,res)=>{
+  try{
+    const {speciality}=req.query;
+    if(!speciality||speciality.length!==1){
+      return res.status(400).json({message:'PLEASE PROVIDE A VALID SPECIALITY'});
+    }
+    const regex=new RegExp(`^${speciality}`,'i');
+    const doctors=await User.find({specialization:regex});
+    if(doctors.length===0){
+      return res.status(404).json({message:`NO DOCTORS FOUND FOR SPECIALITIES STARTING WITH ${speciality}`});
+    }
+    res.status(200).json({doctors});
+  }catch(error){
+    res.status(500).json({msg:'ERROR SEARCHING FOR DOCTORS BY SPECIAITY',error:error.msg});
+  }
+};
 exports.updateDoctorProfile = async (req, res) => {
   try {
     const doctorId = req.user.id;
