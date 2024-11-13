@@ -20,7 +20,7 @@ module.exports=[
     imageurl: "https://res.cloudinary.com/duwfnvak4/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1731308900/image5_kf6hsx.png",
   },
   {
-    name: "Breast & Oncolplastic------Oncology",
+    name: "Breast & Oncolplastic:Oncology",
     imageurl: "https://res.cloudinary.com/duwfnvak4/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1731309245/image6_dsr4n1.png",
   },
   {

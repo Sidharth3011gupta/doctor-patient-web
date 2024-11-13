@@ -60,27 +60,38 @@ exports.getDoctors = async (req, res) => {
       .json({ message: "Error retrieving doctors", error: error.message });
   }
 };
-exports.getDoctorsBySpeciality=async(req,res)=>{
-  try{
-    const {speciality}=req.query;
-    if(!speciality||speciality.length!==1){
-      return res.status(400).json({message:'PLEASE PROVIDE A VALID SPECIALITY'});
+
+exports.getDoctorsBySpeciality = async (req, res) => {
+  try {
+    const { speciality } = req.query;
+    if (!speciality) {
+      return res.status(400).json({ message: 'Please provide a speciality to search' });
     }
-    const regex=new RegExp(`^${speciality}`,'i');
-    const doctors=await User.find({specialization:regex});
-    if(doctors.length===0){
-      return res.status(404).json({message:`NO DOCTORS FOUND FOR SPECIALITIES STARTING WITH ${speciality}`});
+
+    let query;
+
+    if (speciality.length === 1) {
+
+      query = { specialization: new RegExp(`^${speciality}`, 'i') };
+    } else {
+      query = { specialization: new RegExp(speciality, 'i') };
     }
-    res.status(200).json({doctors});
-  }catch(error){
-    res.status(500).json({msg:'ERROR SEARCHING FOR DOCTORS BY SPECIAITY',error:error.msg});
+
+    const doctors = await User.find(query);
+
+    if (doctors.length === 0) {
+      return res.status(404).json({ message: `No doctors found for speciality search: ${speciality}` });
+    }
+
+    res.status(200).json({ doctors });
+  } catch (error) {
+    res.status(500).json({ message: 'Error searching for doctors by speciality', error: error.message });
   }
 };
 exports.updateDoctorProfile = async (req, res) => {
   try {
     const doctorId = req.user.id;
 
-    // Update doctor fields
     const updatedData = {};
     if (req.body.name) updatedData.name = req.body.name;
     if (req.body.specialization)
