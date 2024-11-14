@@ -37,9 +37,6 @@ const userSchema = new mongoose.Schema({
     specialization: {
        type: String
        }, 
-   experience: { 
-    type: Number 
-  }, 
   clinicAddress: { 
     type: String 
   },
@@ -76,22 +73,40 @@ const userSchema = new mongoose.Schema({
 ConsultationFee:{
   type:Number
 },
-Languages:{
+profile: [
+  {
+languages: {
+type:String},
+bio:{ 
   type:String
-},
-Bio:{
-  type:String
-},
-Degree:{
-  type:String
-},
-Institute:{
-  type:String
-},
-CompletedIn:{
-  type:Number
 }
-
+  }
+],
+qualifications: [
+{
+q_name: {type:String
+},
+institute: {
+type:String
+},              
+Passing_year:{
+type:Number
+}
+}
+],
+licenceNumber: {type:Number},
+                
+experience: [
+{
+position: {type:String},
+place: {type:String},
+fromYear: {type:Number},
+fromMonth:{type:Number} ,
+toYear:{type:Number},
+toMonth:{type:Number}
+}
+],
+experienceMonths:{type:Number}
   }
 );
 

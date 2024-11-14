@@ -48,11 +48,15 @@ exports.getDashboard = async (req, res) => {
 };
 
 exports.getDoctors = async (req, res) => {
+
+  const page = parseInt(req.query.page)
+  const limit = parseInt(req.query.limit)
+
   try {
     const doctors = await User.find(
       { role: "doctor" },
       "name specialization experience clinicAddress mobile_number Languages Degree"
-    );
+    ).skip(((page-1)*limit)).limit(limit);
     res.status(200).json({ doctors });
   } catch (error) {
     res
