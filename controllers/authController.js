@@ -51,7 +51,11 @@ exports.signup = async (req, res) => {
       isDoctor,
       specialization,
       clinicAddress,
-      profile,qualifications,experienceMonths,experience,licenceNumber
+      profile,
+      qualifications,
+      experienceMonths,
+      experience,
+      licenceNumber
     });
     await user.save();
 
