@@ -55,7 +55,7 @@ exports.getDoctors = async (req, res) => {
   try {
     const doctors = await User.find(
       { role: "doctor" },
-      "name specialization experience profile qualifications experienceMonths clinicAddress mobile_number "
+      "name specialization experience profile qualifications experienceMonths  years clinicAddress mobile_number "
     ).skip(((page-1)*limit)).limit(limit);
     res.status(200).json({ doctors });
   } catch (error) {
