@@ -50,7 +50,7 @@ exports.getDashboard = async (req, res) => {
 exports.getDoctors = async (req, res) => {
 
   const { _page = 1, _limit = 10 } = req.query; 
-  const page = parseInt(_page, 10);
+  const page = parseInt(_page, 1);
   const limit = parseInt(_limit, 10);
   const skip = (page - 1) * limit;
 
