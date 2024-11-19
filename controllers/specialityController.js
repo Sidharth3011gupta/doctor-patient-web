@@ -89,13 +89,32 @@ exports.specialitiesData=async(req,res)=>{
 }
  
 
-exports.getSpecialities = async(req, res) => {
-  
-  const resSpecial = await specialities1.find()
+exports.getSpecialities = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+
   try {
+       const specialitiesDoc = await specialities1.findOne({}, { 
+      specialities1: { 
+        $slice: [(page - 1) * limit, Number(limit)] 
+      } 
+    });
+
+   
+    const totalSpecialities = await specialities1.aggregate([
+      { $project: { total: { $size: "$specialities1" } } }
+    ]);
+
+    if (!specialitiesDoc) {
+      return res.status(404).json({ message: "No specialties found" });
+    }
+
     res.status(200).json({
-      data : resSpecial
-     });
+      total: totalSpecialities[0]?.total || 0,
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: Math.ceil((totalSpecialities[0]?.total || 0) / limit),
+      data: specialitiesDoc.specialities1,
+    });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching specialties', error: error.message });
   }
