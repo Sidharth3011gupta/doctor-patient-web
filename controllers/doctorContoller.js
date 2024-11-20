@@ -101,23 +101,32 @@ exports.updateDoctorProfile = async (req, res) => {
     const doctorId = req.user.id;
 
     const updatedData = {};
-    if (req.body.name) updatedData.name = req.body.name;
+    if (req.body.name)
+       updatedData.name = req.body.name;
     if (req.body.specialization)
       updatedData.specialization = req.body.specialization;
-    if (req.body.experience) updatedData.experience = req.body.experience;
+    if (req.body.experience)
+       updatedData.experience = req.body.experience;
     if (req.body.clinicAddress)
       updatedData.clinicAddress = req.body.clinicAddress;
     if (req.body.ConsultationFee)
       updatedData.ConsultationFee = req.body.ConsultationFee;
-    if (req.body.email) updatedData.email = req.body.email;
+    if (req.body.email) 
+      updatedData.email = req.body.email;
     if (req.body.mobile_number)
       updatedData.mobile_number = req.body.mobile_number;
-    if (req.body.gender) updatedData.gender = req.body.gender;
-    if (req.body.Bio) updatedData.Bio = req.body.Bio;
-    if (req.body.CompletedIn) updatedData.CompletedIn = req.body.CompletedIn;
-    if (req.body.Degree) updatedData.Degree = req.body.Degree;
-    if (req.body.Institute) updatedData.Institute = req.body.Institute;
-    if (req.body.Languages) updatedData.Languages = req.body.Languages;
+    if (req.body.gender) 
+      updatedData.gender = req.body.gender;
+    if (req.body.Bio)
+       updatedData.Bio = req.body.Bio;
+    if (req.body.CompletedIn)
+       updatedData.CompletedIn = req.body.CompletedIn;
+    if (req.body.Degree) 
+      updatedData.Degree = req.body.Degree;
+    if (req.body.Institute)
+       updatedData.Institute = req.body.Institute;
+    if (req.body.Languages)
+       updatedData.Languages = req.body.Languages;
     const updatedDoctor = await User.findByIdAndUpdate(doctorId, updatedData, {
       new: true,
       runValidators: true,
@@ -132,3 +141,47 @@ exports.updateDoctorProfile = async (req, res) => {
       .json({ message: "Error updating profile", error: error.message });
   }
 };
+exports.getDoctorsById = async (req, res) => {
+  try {
+    const { doctor } = req.query;
+    if (!doctor) {
+      return res.status(400).json({ message: 'Please provide a doctor to search' });
+    }
+
+    const query = { name: new RegExp(doctor, 'i') }
+    const doctors = await User.find(query);
+
+    if (doctors.length === 0) {
+      return res.status(404).json({ message: `No doctors found` });
+    }
+
+    res.status(200).json({ doctors });
+  } catch (error) {
+    res.status(500).json({ message: 'Error searching for doctors by id', error: error.message });
+  }
+};
+exports.getDoctorsBySpecialityAndName = async (req, res) => {
+  try {
+    const { doctor, speciality } = req.query;
+    if (!doctor || !speciality) {
+      return res.status(400).json({ message: 'Please provide both doctor name and speciality to search' });
+    }
+    const query = {
+      $and: [
+        { name: new RegExp(doctor, 'i') }, 
+        { specialization: new RegExp(speciality, 'i') }
+      ],
+    };
+
+    const doctors = await User.find(query);
+
+    if (doctors.length === 0) {
+      return res.status(404).json({ message: 'No doctors found' });
+    }
+
+    res.status(200).json({ doctors });
+  } catch (error) {
+    res.status(500).json({ message: 'Error searching for doctors by speciality and name', error: error.message });
+  }
+};
+
