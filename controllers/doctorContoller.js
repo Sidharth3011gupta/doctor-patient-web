@@ -48,24 +48,28 @@ exports.getDashboard = async (req, res) => {
 };
 
 exports.getDoctors = async (req, res) => {
-
   const { _page = 1, _limit = 10 } = req.query; 
   const page = parseInt(_page, 10);
   const limit = parseInt(_limit, 10);
   const skip = (page - 1) * limit;
 
-
   try {
+    const totalDoctors = await User.countDocuments({ role: "doctor" });
     const doctors = await User.find(
       { role: "doctor" },
-      "name specialization experience profile qualifications experienceMonths  years clinicAddress mobile_number "
-    ).skip(skip)
-    .limit(limit);
-    res.status(200).json({ doctors });
+      "name specialization experience profile qualifications experienceMonths years clinicAddress mobile_number"
+    )
+      .skip(skip)
+      .limit(limit);
+    res.status(200).json({ 
+      totalDoctors, 
+      doctors 
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error retrieving doctors", error: error.message });
+    res.status(500).json({ 
+      message: "Error retrieving doctors", 
+      error: error.message 
+    });
   }
 };
 

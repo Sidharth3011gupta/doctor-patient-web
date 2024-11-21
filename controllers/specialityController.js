@@ -119,3 +119,28 @@ exports.getSpecialities = async (req, res) => {
     res.status(500).json({ message: 'Error fetching specialties', error: error.message });
   }
 };
+exports.getSpecialityByName = async (req, res) => {
+  try {
+    const { speciality } = req.query;
+    if (!speciality) {
+      return res.status(400).json({ message: 'Please provide a speciality to search' });
+    }
+    const result = await specialities1.findOne({
+      specialities1: { $elemMatch: { name: new RegExp(speciality, 'i') } },
+    });
+    if (!result) {
+      return res.status(404).json({ message: `No doctors found for speciality: ${speciality}` });
+    }
+    const matchingSpecialities = result.specialities1.filter((spec) =>
+      new RegExp(speciality, 'i').test(spec.name)
+    );
+
+    if (matchingSpecialities.length === 0) {
+      return res.status(404).json({ message: `No doctors found for speciality: ${speciality}` });
+    }
+
+    res.status(200).json({ specialization: matchingSpecialities });
+  } catch (error) {
+    res.status(500).json({ message: 'Error searching for doctors by speciality', error: error.message });
+  }
+};
