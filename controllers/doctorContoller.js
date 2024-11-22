@@ -188,4 +188,25 @@ exports.getDoctorsBySpecialityAndName = async (req, res) => {
     res.status(500).json({ message: 'Error searching for doctors by speciality and name', error: error.message });
   }
 };
+exports.getUserById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const doctor = await User.findById(id).select(
+      "name specialization experience profile qualifications clinicAddress ConsultationFee years"
+    );
+
+    if (doctor) {
+      res.status(200).json({ success: true, doctor });
+    } else {
+      res.status(404).json({ success: false, message: "Doctor not found" });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error retrieving doctor",
+      error: error.message,
+    });
+  }
+};
 

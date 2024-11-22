@@ -21,5 +21,6 @@ router.put('/doctors/profile', authenticate, isDoctor, doctorController.updateDo
 router.get("/doctors", doctorController.getDoctors);
 router.get('/doctors/search',doctorController.getDoctorsBySpeciality);
 router.get('/doctors/searchbyid',doctorController.getDoctorsById);
+router.get('/doctors/searchbyUserid/:id',doctorController.getUserById);
 router.get('/doctors/searchbyname',doctorController.getDoctorsBySpecialityAndName);
 module.exports = router;
