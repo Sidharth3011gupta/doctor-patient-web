@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { signup, login } = require("../controllers/authController");
 const { authenticate, isDoctor, isPatient } = require("../middlewares/auth");
+const Appointment = require("../models/Appointment");
 
 router.post("/signup", signup);
 
@@ -16,3 +17,17 @@ router.get("/patient-dashboard", authenticate, isPatient, (req, res) => {
 });
 
 module.exports = router;
+router.post("/appointments", async (req, res) => {
+  const { doctorId, patientId, appointmentDate } = req.body;
+
+  try {
+    const newAppointment = await Appointment.create({
+      doctorId,
+      patientId,
+      appointmentDate,
+    });
+    res.status(201).json({ message: "Appointment created", newAppointment });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
