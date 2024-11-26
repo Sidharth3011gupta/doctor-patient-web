@@ -1,7 +1,8 @@
 const User = require("../models/User");
 const Appointment = require("../models/Appointment");
 
-exports.getProfile = async (req, res) => {
+exports.getProfile = async (req, res) => 
+  {
   try {
     const doctor = await User.findById(req.user.id);
     if (!doctor || doctor.role !== "doctor") {
@@ -13,6 +14,7 @@ exports.getProfile = async (req, res) => {
   }
 };
 
+
 exports.getAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find({ doctorId: req.user.id })
@@ -23,6 +25,7 @@ exports.getAppointments = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 exports.getDashboard = async (req, res) => {
   try {
@@ -46,6 +49,7 @@ exports.getDashboard = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 exports.getDoctors = async (req, res) => {
   const { _page = 1, _limit = 10 } = req.query; 
@@ -73,33 +77,7 @@ exports.getDoctors = async (req, res) => {
   }
 };
 
-exports.getDoctorsBySpeciality = async (req, res) => {
-  try {
-    const { speciality } = req.query;
-    if (!speciality) {
-      return res.status(400).json({ message: 'Please provide a speciality to search' });
-    }
 
-    let query;
-
-    if (speciality.length === 1) {
-
-      query = { specialization: new RegExp(`^${speciality}`, 'i') };
-    } else {
-      query = { specialization: new RegExp(speciality, 'i') };
-    }
-
-    const doctors = await User.find(query);
-
-    if (doctors.length === 0) {
-      return res.status(404).json({ message: `No doctors found for speciality search: ${speciality}` });
-    }
-
-    res.status(200).json({ doctors });
-  } catch (error) {
-    res.status(500).json({ message: 'Error searching for doctors by speciality', error: error.message });
-  }
-};
 exports.updateDoctorProfile = async (req, res) => {
   try {
     const doctorId = req.user.id;
@@ -145,49 +123,8 @@ exports.updateDoctorProfile = async (req, res) => {
       .json({ message: "Error updating profile", error: error.message });
   }
 };
-exports.getDoctorsById = async (req, res) => {
-  try {
-    const { doctor } = req.query;
-    if (!doctor) {
-      return res.status(400).json({ message: 'Please provide a doctor to search' });
-    }
 
-    const query = { name: new RegExp(doctor, 'i') }
-    const doctors = await User.find(query);
 
-    if (doctors.length === 0) {
-      return res.status(404).json({ message: `No doctors found` });
-    }
-
-    res.status(200).json({ doctors });
-  } catch (error) {
-    res.status(500).json({ message: 'Error searching for doctors by id', error: error.message });
-  }
-};
-exports.getDoctorsBySpecialityAndName = async (req, res) => {
-  try {
-    const { doctor, speciality } = req.query;
-    if (!doctor || !speciality) {
-      return res.status(400).json({ message: 'Please provide both doctor name and speciality to search' });
-    }
-    const query = {
-      $and: [
-        { name: new RegExp(doctor, 'i') }, 
-        { specialization: new RegExp(speciality, 'i') }
-      ],
-    };
-
-    const doctors = await User.find(query);
-
-    if (doctors.length === 0) {
-      return res.status(404).json({ message: 'No doctors found' });
-    }
-
-    res.status(200).json({ doctors });
-  } catch (error) {
-    res.status(500).json({ message: 'Error searching for doctors by speciality and name', error: error.message });
-  }
-};
 exports.getUserById = async (req, res) => {
   const { id } = req.params;
 
@@ -209,4 +146,48 @@ exports.getUserById = async (req, res) => {
     });
   }
 };
+
+
+exports.searchDoctors = async (req, res) => {
+  try {
+    const { speciality, doctor } = req.query;
+    if (!speciality && !doctor) {
+      return res.status(400).json({
+        message: 'Please provide at least one query parameter: speciality, doctor, or both.',
+      });
+    }
+
+    let query = {};
+    if (speciality) {
+      query.specialization = speciality.length === 1 
+        ? new RegExp(`^${speciality}`, 'i') 
+        : new RegExp(speciality, 'i');
+    }
+
+    if (doctor) {
+      query.name = new RegExp(doctor, 'i');
+    }
+    if (speciality && doctor) {
+      query = {
+        $and: [
+          { name: new RegExp(doctor, 'i') },
+          { specialization: new RegExp(speciality, 'i') },
+        ],
+      };
+    }
+    const doctors = await User.find(query);
+
+    if (doctors.length === 0) {
+      return res.status(404).json({ message: 'No doctors found for the given criteria.' });
+    }
+
+    res.status(200).json({ doctors });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error searching for doctors.',
+      error: error.message,
+    });
+  }
+};
+
 
