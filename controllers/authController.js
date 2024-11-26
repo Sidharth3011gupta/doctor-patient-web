@@ -4,7 +4,7 @@ const User = require("../models/User");
 const validatePassword = require("../utils/validatePassword");
 const validateMobilenumber = require("../utils/validateMobile_number");
 exports.signup = async (req, res) => {
-  const { name, gender, dob, mobile_number, email, password, role,specialization,clinicAddress,experienceMonths,years,experience,profile,qualifications,licenceNumber} = req.body;
+  const { name, gender, dob, mobile_number, email, password, role,specialization,clinicAddress,experienceMonths,years,experience,profile,qualifications,next_available,licenceNumber} = req.body;
   try {
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -55,7 +55,9 @@ exports.signup = async (req, res) => {
       qualifications,
       experienceMonths,
       experience,
-      licenceNumber,years
+      licenceNumber,
+      years,
+      next_available
     });
     await user.save();
 
