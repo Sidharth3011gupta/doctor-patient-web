@@ -61,7 +61,7 @@ exports.getDoctors = async (req, res) => {
     const totalDoctors = await User.countDocuments({ role: "doctor" });
     const doctors = await User.find(
       { role: "doctor" },
-      "name specialization experience profile qualifications experienceMonths years clinicAddress mobile_number"
+      "name specialization experience profile qualifications experienceMonths years clinicAddress next_available mobile_number"
     )
       .skip(skip)
       .limit(limit);
