@@ -106,7 +106,10 @@ toYear:{type:Number},
 toMonth:{type:Number}
 }
 ],
-experienceMonths:{type:Number}
+experienceMonths:{type:Number},
+next_available:{
+  type:String
+}
   }
 );
 
