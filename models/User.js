@@ -111,7 +111,7 @@ next_available:{
   type:String
 },
 profile_pic:{
-  type:URL
+  type:String
 }
   }
 );
