@@ -130,7 +130,7 @@ exports.getUserById = async (req, res) => {
 
   try {
     const doctor = await User.findById(id).select(
-      "name specialization experience profile qualifications clinicAddress ConsultationFee years"
+      "name specialization experience profile_pic profile qualifications clinicAddress ConsultationFee years"
     );
 
     if (doctor) {
