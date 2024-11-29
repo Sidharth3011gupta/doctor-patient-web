@@ -80,7 +80,7 @@ exports.getDoctors = async (req, res) => {
 
 exports.updateDoctorProfile = async (req, res) => {
   try {
-    const doctorId = req.user.id;
+    const { id }=  req.params;
 
     const updatedData = {};
     if (req.body.name)
@@ -109,7 +109,7 @@ exports.updateDoctorProfile = async (req, res) => {
        updatedData.Institute = req.body.Institute;
     if (req.body.Languages)
        updatedData.Languages = req.body.Languages;
-    const updatedDoctor = await User.findByIdAndUpdate(doctorId, updatedData, {
+    const updatedDoctor = await User.findByIdAndUpdate(id, updatedData, {
       new: true,
       runValidators: true,
     });

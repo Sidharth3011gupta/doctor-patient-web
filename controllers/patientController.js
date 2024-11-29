@@ -22,16 +22,25 @@ exports.getSpecialities = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-exports.getAppointments = async (req, res) => {
+exports.getAppointmentById = async (req, res) => {
   try {
-    const appointments = await Appointment.find({ patientId: req.user.id })
-      .populate("doctorId", "name specialization clinicAddress")
+    const { id } = req.params; 
+
+    const appointment = await Appointment.findById(id)
+      .populate("doctorId", "name specialization clinicAddress") 
       .exec();
-    res.json({ appointments });
+
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+
+    res.json({ appointment });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 exports.getProfile = async (req, res) => {
   try {
     const patient = await User.findById(req.user.id, "name email phone");
@@ -45,7 +54,7 @@ exports.getProfile = async (req, res) => {
 };
 exports.updatedPatientProfile = async (req, res) => {
   try {
-    const patientId = req.user.id;
+    const {id}=req.params;
     const updatedData = {};
     if (req.body.name) updatedData.name = req.body.name;
     if (req.body.email) updatedData.email = req.body.email;
@@ -63,7 +72,7 @@ exports.updatedPatientProfile = async (req, res) => {
     if (req.body.HouseNumber) updatedData.HouseNumber = req.body.HouseNumber;
 
     const updatedPatient = await User.findByIdAndUpdate(
-      patientId,
+      id,
       updatedData,
       { new: true, runValidators: true }
     );

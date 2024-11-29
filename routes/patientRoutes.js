@@ -13,12 +13,10 @@ router.get(
 );
 
 router.get(
-  "/appointments",
-  authenticate,
-  isPatient,
-  patientController.getAppointments
+  "/appointments/:id",
+  patientController.getAppointmentById
 );
 
 router.get("/profile", authenticate, isPatient, patientController.getProfile);
-router.put('/patient/profile', authenticate, isPatient, patientController.updatedPatientProfile);
+router.put('/profile/:id', patientController.updatedPatientProfile);
 module.exports = router;

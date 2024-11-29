@@ -17,7 +17,7 @@ router.get(
   doctorController.getAppointments
 );
 
-router.put('/doctors/profile', authenticate, isDoctor, doctorController.updateDoctorProfile);
+router.put('/doctors/profile/:id', doctorController.updateDoctorProfile);
 router.get("/doctors", doctorController.getDoctors);
 router.get('/doctors/searchbyUserid/:id',doctorController.getUserById);
 router.get('/doctors/search',doctorController.searchDoctors)
