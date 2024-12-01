@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { signup, login } = require("../controllers/authController");
+const { signup, login,forgotPassword,resetPassword} = require("../controllers/authController");
 const { authenticate, isDoctor, isPatient } = require("../middlewares/auth");
 const Appointment = require("../models/Appointment");
 
@@ -31,3 +31,7 @@ router.post("/appointments", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+router.post("/forgot-password", forgotPassword);
+
+
+router.post("/reset-password/:token", resetPassword);

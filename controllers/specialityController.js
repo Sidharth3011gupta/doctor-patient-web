@@ -1,4 +1,5 @@
 const specialities1 = require('../data/specialities1');
+const User=require("../models/User")
 
 exports.specialitiesData=async(req,res)=>{
 
@@ -142,5 +143,33 @@ exports.getSpecialityByName = async (req, res) => {
     res.status(200).json({ specialization: matchingSpecialities });
   } catch (error) {
     res.status(500).json({ message: 'Error searching for doctors by speciality', error: error.message });
+  }
+};
+exports.getDoctorsBySpeciality = async (req, res) => {
+  try {
+    const { speciality } = req.params;
+    const doctors = await User.find({
+      role: "doctor",
+      specialization: { $regex: new RegExp(speciality, "i") },
+    }).select("name specialization years experience ConsultationFee experiencemonths clinicAddress mobile_number profile");
+
+    if (doctors.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No doctors found for the specified specialization",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `${doctors.length} doctor(s) found with specialization: ${speciality}`,
+      data: doctors,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching doctors",
+      error: error.message,
+    });
   }
 };
