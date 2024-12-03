@@ -15,5 +15,14 @@ function validatePassword(password) {
       }
     };
   }
-  module.exports=validatePassword;
+  function validateConfirmPassword(password, confirmPassword) {
+    const passwordsMatch = password === confirmPassword;
+    return {
+        isValid: passwordsMatch,
+        errors: {
+            passwordsMatch
+        }
+    };
+  }
+  module.exports=validatePassword,validateConfirmPassword;
   

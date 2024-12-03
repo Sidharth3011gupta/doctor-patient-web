@@ -6,7 +6,7 @@ const User = require("../models/User");
 const validatePassword = require("../utils/validatePassword");
 const validateMobilenumber = require("../utils/validateMobile_number");
 exports.signup = async (req, res) => {
-  const { name, gender, dob, mobile_number, email, password, role,specialization,clinicAddress,experienceMonths,years,experience,profile,qualifications,next_available,licenceNumber} = req.body;
+  const { name, gender, dob, mobile_number,confirm_password, email, password, role,specialization,clinicAddress,experienceMonths,years,experience,profile,qualifications,next_available,licenceNumber} = req.body;
   try {
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -39,16 +39,19 @@ exports.signup = async (req, res) => {
 
       return res.status(400).json({ message: errorMessage });
     }
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>3",password)
     const hashedPassword = await bcrypt.hash(password, 8);
+    const hashedPassword2 = await bcrypt.hash(confirm_password, 8);
     const isDoctor = role === "doctor";
-
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>4",password)
     const user = new User({
       name,
       gender,
       dob,
       mobile_number,
       email,
-      password: hashedPassword,
+      password:hashedPassword,
+      confirm_password:hashedPassword2,
       role,
       isDoctor,
       specialization,
@@ -62,7 +65,6 @@ exports.signup = async (req, res) => {
       next_available
     });
     await user.save();
-
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET
@@ -81,31 +83,45 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, mobile_number, password } = req.body;
   const loginId = email ?? mobile_number;
-
+console.log({ email,loginId, mobile_number, password })
   try {
-    console.log(loginId)
-    const user =  email ? await User.findOne({email : loginId})
-     : await User.findOne({ mobile_number : loginId});
-     console.log(user)
+    if (!email && !mobile_number) {
+      return res.status(400).json({ message: "Email or mobile number is required" });
+    }
+
+    console.log("LoginId:", loginId);
+
+    const user = email
+      ? await User.findOne({ email: loginId })
+      : await User.findOne({ mobile_number: loginId });
+
+    console.log("User found:", user);
+
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(400).json({ message: "Invalid credentials" });
+
+    console.log(password,user.password)
+    console.log("Password match:", isMatch);
+
+    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET
     );
+
     res.json({
       message: "Logged in successfully",
       token,
       user: { id: user._id, name: user.name, role: user.role },
     });
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
 exports.forgotPassword = async (req, res) => {
