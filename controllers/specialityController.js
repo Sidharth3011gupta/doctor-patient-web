@@ -18,7 +18,7 @@ exports.specialitiesData=async(req,res)=>{
       imageurl: "https://res.cloudinary.com/duwfnvak4/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1731308869/image3_cuagjx.png",
     },
     {
-      name: "Anasthesiology",
+      name: "Anesthesiology",
       imageurl: "https://res.cloudinary.com/duwfnvak4/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1731308891/image4_gxxyxk.png",
     },
     {
@@ -70,7 +70,7 @@ exports.specialitiesData=async(req,res)=>{
       imageurl: "https://res.cloudinary.com/duwfnvak4/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1731309598/image16_rnhroi.png",
     },
     {
-      name: "Diabetolgy",
+      name: "Diabetology",
       imageurl: "https://res.cloudinary.com/duwfnvak4/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1731309611/image17_b55x2x.png",
     },
     {
