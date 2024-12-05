@@ -19,7 +19,6 @@ mongoose
   .catch((err) => console.log("MongoDB connection error:", err));
 
 app.use("/auth", authRoutes);
-app.use('/doctor', doctorRoutes);
 app.use('/patient', patientRoutes);
 app.use('/api', doctorRoutes);
 app.use('/api2',specialityRoutes)

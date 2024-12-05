@@ -1,57 +1,108 @@
 const User = require("../models/User");
 const Appointment = require("../models/Appointment");
+const specialities1 = require('../data/specialities1');
+const bcrypt = require('bcryptjs');
 exports.getDoctors = async (req, res) => {
   try {
     const doctors = await User.find(
       { role: "doctor" },
-      "name specialization experience clinicAddress phone"
+      "name specialization experience clinicAddress mobile_number"
     );
-    res.json({ doctors });
+    res.json({ success: true, doctors });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error", error });
   }
 };
-
-exports.getSpecialities = async (req, res) => {
-  try {
-    const specialities = await User.distinct("specialization", {
-      role: "doctor",
-    });
-    res.json({ specialities });
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-};
+    exports.getSpecialities = async (req, res) => {
+      const { page = 1, limit = 10 } = req.query;
+    
+      try {
+           const specialitiesDoc = await specialities1.findOne({}, { 
+          specialities1: { 
+            $slice: [(page - 1) * limit, Number(limit)] 
+          } 
+        });
+    
+       
+        const totalSpecialities = await specialities1.aggregate([
+          { $project: { total: { $size: "$specialities1" } } }
+        ]);
+    
+        if (!specialitiesDoc) {
+          return res.status(404).json({ message: "No specialties found" });
+        }
+    
+        res.status(200).json({
+          total: totalSpecialities[0]?.total || 0,
+          page: Number(page),
+          limit: Number(limit),
+          totalPages: Math.ceil((totalSpecialities[0]?.total || 0) / limit),
+          data: specialitiesDoc.specialities1,
+        });
+      } catch (error) {
+        res.status(500).json({ message: 'Error fetching specialties', error: error.message });
+      }
+    }; 
 exports.getAppointmentById = async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
 
     const appointment = await Appointment.findById(id)
-      .populate("doctorId", "name specialization clinicAddress") 
+      .populate("doctorId", "name specialization clinicAddress")
+      .populate("patientId", "name email mobile_number")
       .exec();
 
     if (!appointment) {
-      return res.status(404).json({ message: "Appointment not found" });
+      return res.status(404).json({ success: false, message: "Appointment not found" });
     }
 
-    res.json({ appointment });
+    res.json({ success: true, appointment });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error", error });
   }
 };
-
 exports.getProfile = async (req, res) => {
   try {
-    const patient = await User.findById(req.user.id, "name email phone");
+    const {id}=req.params;
+    const patient = await User.findById(id);
     if (!patient || patient.role !== "patient") {
-      return res.status(404).json({ message: "Patient not found" });
+      return res.status(404).json({ success: false, message: "Patient not found" });
     }
-    res.json({ patient });
+    res.json({ success: true, patient });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error", error });
   }
 };
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { password, newPassword } = req.body;
+
+    const patient = await User.findById(id);
+    if (!patient || patient.role !== "patient") {
+      return res.status(404).json({ success: false, message: "Patient not found" });
+    }
+    const isMatch = await bcrypt.compare(password, patient.password);
+    console.log(password)
+    console.log(patient.password)
+    if (!isMatch) {
+      console.log(password)
+      console.log(patient.password)
+      return res.status(400).json({ success: false, message: "Incorrect current password" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    patient.newPassword = hashedPassword;
+    await patient.save();
+
+    res.json({ success: true, message: "Password changed successfully" });
+  } catch (error) {
+    console.error("Error in changePassword:", error);
+    res.status(500).json({ success: false, message: "Server error", error });
+  }
+};
+
 exports.updatedPatientProfile = async (req, res) => {
   try {
     const {id}=req.params;
@@ -61,15 +112,12 @@ exports.updatedPatientProfile = async (req, res) => {
     if (req.body.gender) updatedData.gender = req.body.gender;
     if (req.body.dob) updatedData.dob = req.body.dob;
     if (req.body.BloodGroup) updatedData.BloodGroup = req.body.BloodGroup;
-    if (req.body.Street) updatedData.Street = req.body.Street;
-    if (req.body.Area) updatedData.Area = req.body.Area;
-    if (req.body.locality) updatedData.locality = req.body.locality;
+    if(req.body.Address) updatedData.Address=req.body.Address;
     if (req.body.City) updatedData.City = req.body.City;
     if (req.body.State) updatedData.State = req.body.State;
     if (req.body.Pincode) updatedData.Pincode = req.body.Pincode;
     if (req.body.Country) updatedData.Country = req.body.Country;
-    if (req.body.Colony) updatedData.Colony = req.body.Colony;
-    if (req.body.HouseNumber) updatedData.HouseNumber = req.body.HouseNumber;
+
 
     const updatedPatient = await User.findByIdAndUpdate(
       id,

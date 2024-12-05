@@ -83,7 +83,6 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, mobile_number, password } = req.body;
   const loginId = email ?? mobile_number;
-console.log({ email,loginId, mobile_number, password })
   try {
     if (!email && !mobile_number) {
       return res.status(400).json({ message: "Email or mobile number is required" });
@@ -101,7 +100,6 @@ console.log({ email,loginId, mobile_number, password })
 
     const isMatch = await bcrypt.compare(password, user.password);
 
-    console.log(password,user.password)
     console.log("Password match:", isMatch);
 
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
@@ -114,7 +112,7 @@ console.log({ email,loginId, mobile_number, password })
     res.json({
       message: "Logged in successfully",
       token,
-      user: { id: user._id, name: user.name, role: user.role },
+      user: { id: user._id, name: user.name, role: user.role,dob:user.dob,gender:user.gender,mobile_number:user.mobile_number,email:user.email },
     });
   } catch (error) {
     console.error("Login error:", error);

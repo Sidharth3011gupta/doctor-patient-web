@@ -3,7 +3,7 @@ const User=require("../models/User")
 
 exports.specialitiesData=async(req,res)=>{
 
-  const specialities= await specialities1.create({
+  const specialities1= await specialities1.create({
     specialities1:[
     {
       name: "Gastroenterology",

@@ -26,6 +26,9 @@ const userSchema = new mongoose.Schema({
     type: String,
      required: true
      },
+     newPassword:{
+      type:String
+     },
      confirm_password:{
       type:String,
       required:true
@@ -46,19 +49,7 @@ const userSchema = new mongoose.Schema({
   clinicAddress: { 
     type: String 
   },
-  HouseNumber:{
-    type:String
-  },
-  Colony:{
-    type:String
-  },
-  Street:{
-    type:String 
-  },
-  Area:{
-    type:String
-  },
-  Locality:{
+  Address:{
     type:String
   },
   City:{
@@ -118,7 +109,8 @@ next_available:{
 },
 profile_pic:{
   type:String
-}
+},
+
   }
 );
 

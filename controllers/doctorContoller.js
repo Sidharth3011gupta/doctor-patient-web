@@ -1,54 +1,108 @@
 const User = require("../models/User");
 const Appointment = require("../models/Appointment");
+const Review = require("../models/Review");
 
-exports.getProfile = async (req, res) => 
-  {
+
+exports.getProfile = async (req, res) => {
   try {
-    const doctor = await User.findById(req.user.id);
+   const {id}=req.params;
+    const doctor = await User.findById(id)
+      .select("-password") 
+      .populate("qualifications") 
+      .populate("experience"); 
+
     if (!doctor || doctor.role !== "doctor") {
       return res.status(404).json({ message: "Doctor not found" });
     }
-    res.json({ doctor });
+
+    res.json({
+      success: true,
+      personalInfo: {
+        name: doctor.name,
+        dob: doctor.dob,
+        gender: doctor.gender,
+        mobile_number: doctor.mobile_number,
+        email: doctor.email,
+        clinicAddress: doctor.clinicAddress,
+        specialization: doctor.specialization,
+        consultationFee: doctor.ConsultationFee,
+      },
+      qualifications: doctor.qualifications,
+      experience: doctor.experience,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
 
 exports.getAppointments = async (req, res) => {
   try {
-    const appointments = await Appointment.find({ doctorId: req.user.id })
-      .populate("patientId", "name email")
+    const {id}=req.params;
+    const appointments = await Appointment.find({ doctorId: id })
+      .populate("patientId", "name email mobile_number") 
       .exec();
-    res.json({ appointments });
+
+    res.json({
+      success: true,
+      appointments: appointments.map((appointment) => ({
+        id: appointment._id,
+        patientName: appointment.patientId.name,
+        patientEmail: appointment.patientId.email,
+        mobile: appointment.patientId.mobile_number,
+        date: appointment.date,
+        time: appointment.time,
+        status: appointment.status,
+      })),
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
 
 exports.getDashboard = async (req, res) => {
   try {
-    const doctor = await User.findById(req.user.id);
-    const appointments = await Appointment.find({ doctorId: req.user.id });
+    const { id } = req.params; 
+    const doctor = await User.findById(id);
+
+    if (!doctor || doctor.role !== "doctor") {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    const appointments = await Appointment.find({ doctorId: id }); 
+    const reviews = await Review.find({ doctorId: id });
+
     const pendingAppointments = appointments.filter(
       (app) => app.status === "pending"
     ).length;
+    const completedAppointments = appointments.filter(
+      (app) => app.status === "completed"
+    ).length;
 
     res.json({
-      message: `Welcome, ${doctor.name}`,
-      summary: {
+      success: true,
+      welcomeMessage: `Welcome, Dr. ${doctor.name}`,
+      dashboardSummary: {
         totalAppointments: appointments.length,
         pendingAppointments,
-        completedAppointments: appointments.filter(
-          (app) => app.status === "completed"
-        ).length,
+        completedAppointments,
+      },
+      reviewsSummary: {
+        totalReviews: reviews.length,
+        averageRating:
+          reviews.length > 0
+            ? reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length
+            : 0,
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+
 
 
 exports.getDoctors = async (req, res) => {
@@ -150,7 +204,7 @@ exports.getUserById = async (req, res) => {
 
 exports.searchDoctors = async (req, res) => {
   try {
-    const { speciality, doctor } = req.query;
+    const { speciality, doctor, page = 1, limit = 5 } = req.query; 
     if (!speciality && !doctor) {
       return res.status(400).json({
         message: 'Please provide at least one query parameter: speciality, doctor, or both.',
@@ -159,8 +213,8 @@ exports.searchDoctors = async (req, res) => {
 
     let query = {};
     if (speciality) {
-      query.specialization = speciality.length === 1 
-        ? new RegExp(`^${speciality}`, 'i') 
+      query.specialization = speciality.length === 1
+        ? new RegExp(`^${speciality}`, 'i')
         : new RegExp(speciality, 'i');
     }
 
@@ -175,13 +229,24 @@ exports.searchDoctors = async (req, res) => {
         ],
       };
     }
-    const doctors = await User.find(query);
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const doctors = await User.find(query)
+    .skip(skip)
+    .limit(parseInt(limit));
+    const totalDoctors = await User.countDocuments(query); 
 
     if (doctors.length === 0) {
-      return res.status(404).json({ message: 'No doctors found for the given criteria.' });
+      return res.status(404).json(
+        { message: 'No doctors found for the given criteria.' });
     }
 
-    res.status(200).json({ doctors });
+    res.status(200).json({
+      total: totalDoctors,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      totalPages: Math.ceil(totalDoctors / limit),
+      doctors,
+    });
   } catch (error) {
     res.status(500).json({
       message: 'Error searching for doctors.',
@@ -189,5 +254,3 @@ exports.searchDoctors = async (req, res) => {
     });
   }
 };
-
-

@@ -1,14 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { authenticate, isPatient } = require("../middlewares/auth");
 const patientController = require("../controllers/patientController");
 
-router.get("/doctors", authenticate, isPatient, patientController.getDoctors);
+router.get("/doctors", patientController.getDoctors);
 
 router.get(
   "/specialities",
-  authenticate,
-  isPatient,
   patientController.getSpecialities
 );
 
@@ -17,6 +14,7 @@ router.get(
   patientController.getAppointmentById
 );
 
-router.get("/profile", authenticate, isPatient, patientController.getProfile);
-router.put('/profile/:id', patientController.updatedPatientProfile);
+router.get("/profile/:id", patientController.getProfile);
+router.put("/change-password/:id", patientController.changePassword);
+router.put('/Updateprofile/:id', patientController.updatedPatientProfile);
 module.exports = router;

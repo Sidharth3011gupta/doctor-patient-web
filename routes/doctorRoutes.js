@@ -1,19 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const { authenticate, isDoctor } = require("../middlewares/auth");
 const doctorController = require("../controllers/doctorContoller");
 
-// Doctor Dashboard
-router.get("/dashboard", authenticate, isDoctor, doctorController.getDashboard);
 
-// Doctor Profile
-router.get("/profile", authenticate, isDoctor, doctorController.getProfile);
+router.get("/dashboard/:id", doctorController.getDashboard);
 
-// Doctor Appointments
+router.get("/profile/:id", doctorController.getProfile);
+
 router.get(
-  "/appointments",
-  authenticate,
-  isDoctor,
+  "/appointments/:id",
   doctorController.getAppointments
 );
 
