@@ -108,6 +108,7 @@ exports.updatedPatientProfile = async (req, res) => {
     const {id}=req.params;
     const updatedData = {};
     if (req.body.name) updatedData.name = req.body.name;
+    if (req.body.profile_pic) updatedData.profile_pic = req.body.profile_pic;
     if (req.body.email) updatedData.email = req.body.email;
     if (req.body.gender) updatedData.gender = req.body.gender;
     if (req.body.dob) updatedData.dob = req.body.dob;
