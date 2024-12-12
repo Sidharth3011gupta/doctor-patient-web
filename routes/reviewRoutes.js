@@ -1,18 +1,14 @@
 const express = require("express");
-const {
-  addReview,
-  getDoctorReviews,
-  getPatientReviews,
-} = require("../controllers/reviewController");
-const authMiddleware = require("../middlewares/authMiddleware");
+const reviewController= require("../controllers/reviewController");
+
 
 const router = express.Router();
 
 
-router.post("/", authMiddleware, addReview);
+router.post("/add",reviewController.addReview);
 
 
-router.get("/doctor/:doctorId", authMiddleware, getDoctorReviews);
-router.get("/patient", authMiddleware, getPatientReviews);
+router.get("/doctor/:doctorId",reviewController. getDoctorReviews);
+router.get("/patient", reviewController.getPatientReviews);
 
 module.exports = router;

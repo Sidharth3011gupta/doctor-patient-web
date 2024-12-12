@@ -142,8 +142,6 @@ exports.updateDoctorProfile = async (req, res) => {
        updatedData.name = req.body.name;
     if (req.body.specialization)
       updatedData.specialization = req.body.specialization;
-    if (req.body.experience)
-       updatedData.experience = req.body.experience;
     if (req.body.clinicAddress)
       updatedData.clinicAddress = req.body.clinicAddress;
     if (req.body.ConsultationFee)
@@ -156,14 +154,20 @@ exports.updateDoctorProfile = async (req, res) => {
       updatedData.gender = req.body.gender;
     if (req.body.Bio)
        updatedData.Bio = req.body.Bio;
-    if (req.body.CompletedIn)
-       updatedData.CompletedIn = req.body.CompletedIn;
-    if (req.body.Degree) 
-      updatedData.Degree = req.body.Degree;
-    if (req.body.Institute)
-       updatedData.Institute = req.body.Institute;
-    if (req.body.Languages)
-       updatedData.Languages = req.body.Languages;
+    if (req.body.qualifications) {
+      if (!Array.isArray(qualifications)) {
+        return res.status(400).json({ error: 'Qualifications must be an array' });
+      }
+      updateFields.qualifications = req.body.qualifications;
+    }
+    if (req.body.experience) {
+      if (!Array.isArray(experience)) {
+        return res.status(400).json({ error: 'Experience must be an array' });
+      }
+      updateFields.experience = req.body.experience;
+    }
+   
+  
     const updatedDoctor = await User.findByIdAndUpdate(id, updatedData, {
       new: true,
       runValidators: true,

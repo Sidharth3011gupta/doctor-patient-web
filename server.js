@@ -6,8 +6,9 @@ const cors=require("cors");
 const doctorRoutes=require("./routes/doctorRoutes");
 const patientRoutes = require('./routes/patientRoutes');
 const specialityRoutes= require('./routes/specialityRoutes');
-
+const reviewRoutes=require('./routes/reviewRoutes');
 dotenv.config();
+
 
 const app = express();
 app.use(express.json());
@@ -17,7 +18,7 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log("MongoDB connection error:", err));
-
+app.use("/review",reviewRoutes);
 app.use("/auth", authRoutes);
 app.use('/patient', patientRoutes);
 app.use('/api', doctorRoutes);
