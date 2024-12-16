@@ -134,52 +134,50 @@ exports.getDoctors = async (req, res) => {
 
 exports.updateDoctorProfile = async (req, res) => {
   try {
-    const { id }=  req.params;
+   const { id } = req.params;
 
     const updatedData = {};
     if (req.body.profile_pic) updatedData.profile_pic = req.body.profile_pic;
-    if (req.body.name)
-       updatedData.name = req.body.name;
-    if (req.body.specialization)
-      updatedData.specialization = req.body.specialization;
-    if (req.body.clinicAddress)
-      updatedData.clinicAddress = req.body.clinicAddress;
-    if (req.body.ConsultationFee)
-      updatedData.ConsultationFee = req.body.ConsultationFee;
-    if (req.body.email) 
-      updatedData.email = req.body.email;
-    if (req.body.mobile_number)
-      updatedData.mobile_number = req.body.mobile_number;
-    if (req.body.gender) 
-      updatedData.gender = req.body.gender;
-    if (req.body.Bio)
-       updatedData.Bio = req.body.Bio;
+    if (req.body.name) updatedData.name = req.body.name;
+    if (req.body.specialization) updatedData.specialization = req.body.specialization;
+    if (req.body.clinicAddress) updatedData.clinicAddress = req.body.clinicAddress;
+    if (req.body.ConsultationFee) updatedData.ConsultationFee = req.body.ConsultationFee;
+    if (req.body.email) updatedData.email = req.body.email;
+    if (req.body.mobile_number) updatedData.mobile_number = req.body.mobile_number;
+    if (req.body.gender) updatedData.gender = req.body.gender;
+    if (req.body.Bio) updatedData.Bio = req.body.Bio;
     if (req.body.qualifications) {
-      if (!Array.isArray(qualifications)) {
+      if (!Array.isArray(req.body.qualifications)) {
         return res.status(400).json({ error: 'Qualifications must be an array' });
       }
-      updateFields.qualifications = req.body.qualifications;
+      updatedData.qualifications = req.body.qualifications;
     }
     if (req.body.experience) {
-      if (!Array.isArray(experience)) {
+      if (!Array.isArray(req.body.experience)) {
         return res.status(400).json({ error: 'Experience must be an array' });
       }
-      updateFields.experience = req.body.experience;
+      updatedData.experience = req.body.experience;
     }
-   
-  
+
+    if (req.body.languages) {
+      if (!Array.isArray(req.body.languages)) {
+        return res.status(400).json({ error: 'Languages must be an array' });
+      }
+      updatedData["profile.0.languages"] = req.body.languages.join(', '); 
+    }
+
     const updatedDoctor = await User.findByIdAndUpdate(id, updatedData, {
       new: true,
       runValidators: true,
     });
 
-    res
-      .status(200)
-      .json({ message: "Profile updated successfully", doctor: updatedDoctor });
+    if (!updatedDoctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    res.status(200).json({ message: "Profile updated successfully", doctor: updatedDoctor });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error updating profile", error: error.message });
+    res.status(500).json({ message: "Error updating profile", error: error.message });
   }
 };
 
