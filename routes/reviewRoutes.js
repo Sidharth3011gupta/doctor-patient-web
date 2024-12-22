@@ -5,7 +5,7 @@ const reviewController= require("../controllers/reviewController");
 const router = express.Router();
 
 
-router.post("/add",reviewController.addReview);
+router.post("/add/:id",reviewController.addReview);
 
 
 router.get("/doctor/:doctorId",reviewController. getDoctorReviews);

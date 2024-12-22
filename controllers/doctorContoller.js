@@ -163,7 +163,17 @@ exports.updateDoctorProfile = async (req, res) => {
       if (!Array.isArray(req.body.languages)) {
         return res.status(400).json({ error: 'Languages must be an array' });
       }
-      updatedData["profile.0.languages"] = req.body.languages.join(', '); 
+      const result = await User.findOneAndUpdate(
+        { _id: id, "profile.0": { $exists: true } }, 
+        { $set: { "profile.0.languages": req.body.languages.join(', ') } }, 
+        { new: true, runValidators: true }
+      );
+
+      if (!result) {
+        return res.status(404).json({ message: "Doctor not found or profile is empty" });
+      }
+
+      return res.status(200).json({ message: "Languages updated successfully", doctor: result });
     }
 
     const updatedDoctor = await User.findByIdAndUpdate(id, updatedData, {
