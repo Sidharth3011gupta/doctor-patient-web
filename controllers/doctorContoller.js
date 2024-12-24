@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const Appointment = require("../models/Appointment");
 const Review = require("../models/Review");
+const validateMobilenumber = require("../utils/validateMobile_number");
 
 
 exports.getProfile = async (req, res) => {
@@ -143,9 +144,31 @@ exports.updateDoctorProfile = async (req, res) => {
     if (req.body.clinicAddress) updatedData.clinicAddress = req.body.clinicAddress;
     if (req.body.ConsultationFee) updatedData.ConsultationFee = req.body.ConsultationFee;
     if (req.body.email) updatedData.email = req.body.email;
-    if (req.body.mobile_number) updatedData.mobile_number = req.body.mobile_number;
+    if (req.body.mobile_number) {
+      const validation = validateMobilenumber(req.body.mobile_number);
+      if (!validation.isValid) {
+        return res.status(400).json({
+          error: 'Invalid mobile number',
+          details: validation.errors,
+        });
+      }
+      updatedData.mobile_number = req.body.mobile_number;
+    }
+
     if (req.body.gender) updatedData.gender = req.body.gender;
-    if (req.body.Bio) updatedData.Bio = req.body.Bio;
+    if (req.body.Bio) {
+      const result = await User.findOneAndUpdate(
+        { _id: id, "profile.0": { $exists: true } }, 
+        { $set: { "profile.0.bio": req.body.Bio } }, 
+        { new: true, runValidators: true }
+      );
+
+      if (!result) {
+        return res.status(404).json({ message: "Doctor not found or profile is empty" });
+      }
+
+      return res.status(200).json({ message: "Bio updated successfully", doctor: result });
+    }
     if (req.body.qualifications) {
       if (!Array.isArray(req.body.qualifications)) {
         return res.status(400).json({ error: 'Qualifications must be an array' });
