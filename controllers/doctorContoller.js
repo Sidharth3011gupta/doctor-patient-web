@@ -162,12 +162,6 @@ exports.updateDoctorProfile = async (req, res) => {
         { $set: { "profile.0.bio": req.body.Bio } }, 
         { new: true, runValidators: true }
       );
-
-      if (!result) {
-        return res.status(404).json({ message: "Doctor not found or profile is empty" });
-      }
-
-      return res.status(200).json({ message: "Bio updated successfully", doctor: result });
     }
     if (req.body.qualifications) {
       if (!Array.isArray(req.body.qualifications)) {
@@ -191,12 +185,6 @@ exports.updateDoctorProfile = async (req, res) => {
         { $set: { "profile.0.languages": req.body.languages.join(', ') } }, 
         { new: true, runValidators: true }
       );
-
-      // if (!result) {
-      //   return res.status(404).json({ message: "Doctor not found or profile is empty" });
-      // }
-
-      // return res.status(200).json({ message: "Languages updated successfully", doctor: result });
     }
 
     const updatedDoctor = await User.findByIdAndUpdate(id, updatedData, {
