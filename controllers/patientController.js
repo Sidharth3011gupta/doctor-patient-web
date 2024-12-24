@@ -2,6 +2,7 @@ const User = require("../models/User");
 const Appointment = require("../models/Appointment");
 const specialities1 = require('../data/specialities1');
 const bcrypt = require('bcryptjs');
+const validateMobilenumber = require("../utils/validateMobile_number");
 exports.getDoctors = async (req, res) => {
   try {
     const doctors = await User.find(
@@ -118,6 +119,16 @@ exports.updatedPatientProfile = async (req, res) => {
     if (req.body.State) updatedData.State = req.body.State;
     if (req.body.Pincode) updatedData.Pincode = req.body.Pincode;
     if (req.body.Country) updatedData.Country = req.body.Country;
+    if (req.body.mobile_number) {
+      const validation = validateMobilenumber(req.body.mobile_number);
+      if (!validation.isValid) {
+        return res.status(400).json({
+          error: 'Invalid mobile number',
+          details: validation.errors,
+        });
+      }
+      updatedData.mobile_number = req.body.mobile_number;
+    }
 
 
     const updatedPatient = await User.findByIdAndUpdate(
