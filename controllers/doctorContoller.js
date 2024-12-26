@@ -278,3 +278,43 @@ exports.searchDoctors = async (req, res) => {
     });
   }
 };
+exports.addQualifications = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { qualifications } = req.body;
+
+    if (!qualifications || !Array.isArray(qualifications)) {
+      return res.status(400).json({ message: "Qualifications must be an array" });
+    }
+
+    const invalidEntry = qualifications.some(
+      (q) => !q.q_name || !q.institute || !q.Passing_year || typeof q.Passing_year !== "number"
+    );
+
+    if (invalidEntry) {
+      return res.status(400).json({ 
+        message: "Each qualification must include q_name, institute, and Passing_year (as a number)." 
+      });
+    }
+
+    const doctor = await User.findById(id);
+
+    if (!doctor || doctor.role !== "doctor") {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    doctor.qualifications.push(...qualifications);
+
+    await doctor.save({ validateBeforeSave: false });
+
+    res.json({
+      success: true,
+      message: "Qualifications added successfully",
+      doctor,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+

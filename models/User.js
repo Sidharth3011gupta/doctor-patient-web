@@ -29,10 +29,13 @@ const userSchema = new mongoose.Schema({
      newPassword:{
       type:String
      },
-     confirm_password:{
-      type:String,
-      required:true
-     },
+     confirm_password: {
+      type: String,
+      required: function() {
+        return this.isNew; // Only required during creation
+      }
+    },
+    
      resetPasswordToken: String,
      resetPasswordExpires: Date,
   role: {
