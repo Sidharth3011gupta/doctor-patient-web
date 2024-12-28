@@ -12,6 +12,7 @@ router.get(
   doctorController.getAppointments
 );
 router.post('/doctors/add-qualifications/:id', doctorController.addQualifications);
+router.post('/doctors/add-experience/:id', doctorController.addExperience);
 router.put('/doctors/profile/:id', doctorController.updateDoctorProfile);
 router.get("/doctors", doctorController.getDoctors);
 router.get('/doctors/searchbyUserid/:id',doctorController.getUserById);

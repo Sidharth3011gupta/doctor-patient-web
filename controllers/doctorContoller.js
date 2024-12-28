@@ -316,5 +316,52 @@ exports.addQualifications = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+exports.addExperience = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { experience } = req.body;
+    if (!experience || !Array.isArray(experience)) {
+      return res.status(400).json({ message: "Experience must be an array" });
+    }
+
+    const invalidEntry = experience.some(
+      (exp) =>
+        !exp.position ||
+        !exp.place ||
+        !exp.fromYear ||
+        typeof exp.fromYear !== "number" ||
+        !exp.fromMonth ||
+        typeof exp.fromMonth !== "number" ||
+        (exp.toYear && typeof exp.toYear !== "number") ||
+        (exp.toMonth && typeof exp.toMonth !== "number")
+    );
+
+    if (invalidEntry) {
+      return res.status(400).json({
+        message:
+          "Each experience must include position, place, fromYear (number), and fromMonth (number). Optional toYear and toMonth must also be numbers if provided.",
+      });
+    }
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.experience.push(...experience);
+
+    await user.save({ validateBeforeSave: false });
+
+    res.json({
+      success: true,
+      message: "Experience added successfully",
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 
 
